@@ -5,71 +5,46 @@ import { UserCard } from "../Components/UserCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useFetchCurrentUser from "../Hooks/useFetchCurrentUser";
+import { useLocation } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const Dashboard = () => {
   const [data, setData] = useState([]);
-  const [userDetails, setUserDetails] = useState(null);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const fetchData = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.get(`${BASE_URL}/user/bulk`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      setData(response.data.user);
-    } catch (err) {
-      setError(err);
-    }
-  };
+  useFetchCurrentUser(navigate);
+
   useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const timer = setTimeout(async () => {
+          const response = await axios.get(
+            `${BASE_URL}/user/bulk?filter=${username}`,
+            {
+              headers: {
+                Authorization: `${token}`,
+              },
+            }
+          );
+          setData(response.data.user);
+        }, 1000);
+
+        () => {
+          clearTimeout(timer);
+        };
+      } catch (err) {
+        setError(err);
+      }
+    };
     fetchData();
-  }, []);
-
-  const fetchCurrentUser = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const userResponse = await axios.get(`${BASE_URL}/user/me`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-
-      setUserDetails(userResponse.data[0]);
-    } catch (err) {
-      navigate("/signin");
-    }
-  };
-
-  useEffect(() => {
-    fetchCurrentUser();
-  }, []);
-
-  const handleUserFilter = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.get(
-        `${BASE_URL}user/bulk?filter=${username}`,
-        {
-          headers: {
-            Authorization: `${token}`,
-          },
-        }
-      );
-      setData(response.data.user);
-    } catch (err) {
-      setError(err);
-    }
-  };
-
-  useEffect(() => {
-    handleUserFilter;
   }, [username]);
+
+  const userDetails = location.state.userData;
 
   if (userDetails && data) {
     const newData = data.filter((user) => user._id !== userDetails._id);
@@ -97,10 +72,9 @@ export const Dashboard = () => {
                 }}
               />
             </div>
-            <RoundedButton onClick={handleUserFilter} />
           </div>
 
-          {newData.map((user) => (
+          {newData.slice(0, 3).map((user) => (
             <UserCard
               key={user._id}
               fromId={userDetails._id}

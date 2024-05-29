@@ -2,29 +2,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { InputBoxV2 } from "../Components/InputBox/InputBoxV2";
 import { useState } from "react";
 import axios from "axios";
-import { useEffect } from "react";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+import useFetchCurrentUser from "../Hooks/useFetchCurrentUser";
 
 export const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const userResponse = await axios.get(`${BASE_URL}/user/me`, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
-
-        if (userResponse.data) navigate("/dashboard");
-      } catch (err) {}
-    };
-    fetchCurrentUser();
-  }, []);
+  useFetchCurrentUser(navigate);
 
   const handleSubmit = async () => {
     try {

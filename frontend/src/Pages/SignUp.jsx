@@ -1,31 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { useEffect } from "react";
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+import useFetchCurrentUser from "../Hooks/useFetchCurrentUser";
 
 import { InputBoxV2 } from "../Components/InputBox/InputBoxV2";
+
 export const SignUp = () => {
+  const navigate = useNavigate();
+  useFetchCurrentUser(navigate);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const userResponse = await axios.get(`${BASE_URL}/user/me`, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
-
-        if (userResponse.data) navigate("/dashboard");
-      } catch (err) {}
-    };
-    fetchCurrentUser();
-  }, []);
 
   const registerAccount = async () => {
     const response = await axios.post(`${BASE_URL}/user/signup`, {

@@ -10,13 +10,13 @@ export const SendMoney = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { fromId, toId, firstName, lastName } = location.state;
+  const { toId, firstName, lastName } = location.state;
   const name = `${firstName} ${lastName}`;
   const [inputAmout, setInputAmount] = useState(0);
 
   useEffect(() => {
     if (!location.state) {
-      window.location.href = "/dashboard";
+      navigate("/dashboard");
     }
   }, []);
 
