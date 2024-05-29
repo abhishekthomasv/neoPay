@@ -1,27 +1,29 @@
 import { Navbar } from "../Components/Navbar";
-import { RoundedButton } from "../Components/Buttons/RoundedButton";
 import { InputBoxV } from "../Components/InputBox/InputBoxV";
 import { UserCard } from "../Components/UserCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import useFetchCurrentUser from "../Hooks/useFetchCurrentUser";
-import { useLocation } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const Dashboard = () => {
   const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
   const [username, setUsername] = useState("");
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useFetchCurrentUser(navigate);
+  const [userDetails, setUserDetails] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       try {
+        const response = await axios.get(
+          `${BASE_URL}/user/bulk?filter=${username}`,
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          }
+        );
+        setData(response.data.user);
+
         const timer = setTimeout(async () => {
           const response = await axios.get(
             `${BASE_URL}/user/bulk?filter=${username}`,
@@ -38,13 +40,29 @@ export const Dashboard = () => {
           clearTimeout(timer);
         };
       } catch (err) {
-        setError(err);
+        console.log(err);
       }
     };
     fetchData();
   }, [username]);
 
-  const userDetails = location.state.userData;
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      const userResponse = await axios.get(`${BASE_URL}/user/me`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (userResponse.data && userResponse.data.length > 0) {
+        setUserDetails(userResponse.data[0]);
+      } else {
+        navigate("/signin");
+      }
+    };
+    fetchUserData();
+  }, []);
 
   if (userDetails && data) {
     const newData = data.filter((user) => user._id !== userDetails._id);

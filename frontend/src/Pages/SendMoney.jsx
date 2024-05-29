@@ -40,7 +40,6 @@ export const SendMoney = () => {
       }
     } catch (error) {
       console.error("Error occurred while sending money:", error);
-      // Handle error here, e.g., show an error message to the user
     }
   };
 

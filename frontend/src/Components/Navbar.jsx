@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useCallback } from "react";
 import { DropdownMenu } from "./DropDownMenu";
 export const Navbar = ({ username }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef();
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);

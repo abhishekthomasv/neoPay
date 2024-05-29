@@ -1,14 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-
-import useFetchCurrentUser from "../Hooks/useFetchCurrentUser";
-
 import { InputBoxV2 } from "../Components/InputBox/InputBoxV2";
 
 export const SignUp = () => {
   const navigate = useNavigate();
-  useFetchCurrentUser(navigate);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  });
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { memo, useRef, useEffect } from "react";
 
-export const DropdownMenu = memo(({ isOpen, username, setIsOpen }) => {
+export const DropdownMenu = memo(({ isOpen, setIsOpen }) => {
   const menuRef = useRef();
 
   useEffect(() => {
