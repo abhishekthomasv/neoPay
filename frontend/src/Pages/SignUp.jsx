@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { InputBoxV2 } from "../Components/InputBox/InputBoxV2";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const SignUp = () => {
   const navigate = useNavigate();
